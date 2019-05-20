@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h4>{% block title %}Create new bracket{% endblock %}</h4>
+{% endblock %}
+
+{% block content %}
+    <form method="post">
+        <label for="competitor1">Competitor 1</label>
+        <input name="competitor1" id="competitor1">
+        <input type="submit" value="GO NOW">
+    </form>
+{% endblock %}
+
+

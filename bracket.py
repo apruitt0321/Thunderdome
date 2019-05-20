@@ -1,9 +1,10 @@
-from random import randint, sample
-import csv
 import logics as lo
-from flask import Blueprint, url_for, g, redirect, render_template
+from flask import Blueprint, url_for, g, request, redirect, render_template
 
 bp = Blueprint('bracket', __name__, url_prefix='/')
+
+def get_blueprint():
+    return bp
 
 def get_state():
     if 'state' not in g:
@@ -11,25 +12,19 @@ def get_state():
     return g.state
 
 @bp.route('/')
-def hello():
-    return "Welcome to the thunderdome"
+def home():
+    return render_template('bracket/home.html')
+
+@bp.route('/new', methods=("GET", "POST"))
+def new_comp():
+    if request.method == "POST":
+        comp1 = request.form['competitor1']
+        return redirect(url_for('bracket.standings'))
+    return render_template('bracket/new.html')
 
 @bp.route('/standings')
 def standings():
     comps = get_state()
-
-#    htext = "<html>\n<head> <title>Current Standings</title> </head>\n<body>"
-#    ftext = "</body>\n</html>"
-#
-#    st = "Scores<br>--------<br>"
-#    for i in comps:
-#        s = ",".join([str(x) for x in i.scores])
-#        url = url_for('bracket.view_comp', competitor=i.name)
-#        st = st + f"<a href={url}>{i.name:>10}</a>: {i.total:>5} ({s})<br>"
-#    reurl = url_for('bracket.rematch')
-#    st += f"<br><form action='{reurl}'><button type='submit'>Go Again?</button></form>"
-#
-#    return htext+st+ftext
     return render_template('bracket/standings.html')
 
 @bp.route('/rematch')
@@ -52,5 +47,3 @@ def view_comp(competitor):
             s = ",".join([str(x) for x in i.scores])
             return f"{i.name:>10}: {i.total:>5} ({s})"
 
-def get_blueprint():
-    return bp

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h5>{% block title %}Welcome to the Thunderdome{% endblock %}</h5>
+{% endblock %}
+
+{% block content %}
+    Please begin by creating a new bracket.
+    <br>
+    <form action="{{url_for('bracket.new_comp')}}">
+        <input type="submit" value="Create New Bracket">
+{% endblock %}
+
+
