@@ -15,6 +15,27 @@ class Competitor():
         s = ",".join([str(x) for x in self.scores])
         return f"{i.name:>10}: {i.total:>5} ({s})\n"
 
+class Tournament():
+    def __init__(self, name):
+        self.name = name
+        self.competitors = []
+
+    def set_comps(self, comp_list):
+        self.competitors = comp_list
+
+def new_tournament(t_name_unsafe, comp_list):
+    with sqlite3.connect('thunderdome.db') as conn:
+        c = conn.cursor()
+        t_name = ''.join(i for i in t_name_unsafe if i.isalnum())
+        c.execute("""CREATE TABLE IF NOT EXISTS """+t_name+""" (Name,
+                Total, Scores)""")
+        for i in comp_list.split(", "):
+            x = (i, 0.0, 'none')
+            c.execute("INSERT INTO "+t_name+" VALUES (?,?,?)", x)
+        conn.commit()
+    tourn = Tournament(t_name)
+    tourn.set_comps([Competitor(i) for i in comp_list.split(", ")])
+    return tourn
 
 # Loads a list of competitors from a csv file.
 def load_competitors():
@@ -71,7 +92,8 @@ def run_bracket(bracket):
 
 def score_bracket(results):
     # Need to adjust this. Currently gives low points to winner of smaller
-    # brackets, making it impossible after a few rounds to get out of the bottom
+    # brackets, making it impossible after a few rounds to get out of the
+    # bottom
     # bracket. Adjust as follows: Take a set number, divide by the factorial of
     # the number of competitors; ie if number = 10 and competitors = 4, 10 / !4.
     # Award number of points equal to reverse placement; ie 1st place gets 4
@@ -104,12 +126,6 @@ if __name__=="__main__":
     sortComps(comps)
     saveComps(comps)
     
-#    print("\nScores\n----------")
-#    for i in comps:
-#        s = ",".join([str(x) for x in i.scores])
-#        print(f"{i.name:>10}: {i.total:>5} ({s})")
-#    print("")
-
     st = "\nScores\n----------\n"
     for i in comps:
         st = st + str(i)

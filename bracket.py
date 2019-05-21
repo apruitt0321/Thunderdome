@@ -2,6 +2,7 @@ import logics as lo
 from flask import Blueprint, url_for, g, request, redirect, render_template
 
 bp = Blueprint('bracket', __name__, url_prefix='/')
+tournament = None
 
 def get_blueprint():
     return bp
@@ -18,7 +19,10 @@ def home():
 @bp.route('/new', methods=("GET", "POST"))
 def new_comp():
     if request.method == "POST":
-        comp1 = request.form['competitor1']
+        t_name = request.form['t_name']
+        comps = request.form['competitors']
+        #lo.sql_save_comps(comp1)
+        tournament = lo.new_tournament(t_name, comps)
         return redirect(url_for('bracket.standings'))
     return render_template('bracket/new.html')
 
